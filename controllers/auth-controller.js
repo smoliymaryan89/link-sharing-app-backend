@@ -91,42 +91,10 @@ const updateUserAvatar = async (req, res) => {
   });
 };
 
-const updateUserProfile = async (req, res) => {
-  const { email, firstName, lastName } = req.body;
-  const { userId } = req.params;
-
-  const user = await User.findById(userId);
-
-  if (!user) {
-    throw HttpError(404);
-  }
-
-  if (email && email !== user.email) {
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
-      throw HttpError(400, "Email already exists in the database");
-    }
-
-    user.email = email;
-  }
-
-  if (firstName) user.firstName = firstName;
-
-  if (lastName) user.lastName = lastName;
-
-  await user.save();
-
-  res.json({
-    user,
-  });
-};
-
 export default {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   logout: ctrlWrapper(logout),
   current: ctrlWrapper(current),
   updateUserAvatar: ctrlWrapper(updateUserAvatar),
-  updateUserProfile: ctrlWrapper(updateUserProfile),
 };

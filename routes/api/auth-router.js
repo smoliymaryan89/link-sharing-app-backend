@@ -16,7 +16,6 @@ const authRouter = express.Router();
 
 const userRegisterValidate = validateBody(userSchemas.userRegisterSchema);
 const userLoginValidate = validateBody(userSchemas.userLoginSchema);
-const updateUserProfileValidate = validateBody(userSchemas.updateUserSchema);
 
 authRouter.post(
   "/register",
@@ -36,15 +35,6 @@ authRouter.patch(
   authenticate,
   upload.single("avatarURL"),
   authController.updateUserAvatar
-);
-
-authRouter.patch(
-  "/:userId",
-  authenticate,
-  isValidId,
-  isEmptyBody,
-  updateUserProfileValidate,
-  authController.updateUserProfile
 );
 
 export default authRouter;
