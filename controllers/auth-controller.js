@@ -1,9 +1,11 @@
+import fs from "fs/promises";
+
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 import User from "../models/User.js";
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
-import { HttpError } from "../helpers/index.js";
+import { HttpError, cloudinary } from "../helpers/index.js";
 
 const { JWT_SECRET } = process.env;
 
@@ -73,9 +75,58 @@ const current = async (req, res) => {
   res.json(currentUser);
 };
 
+const updateUserAvatar = async (req, res) => {
+  const { _id } = req.user;
+
+  const { url: avatar } = await cloudinary.uploader.upload(req.file.path, {
+    folder: "link-sharing-user-avatars",
+  });
+
+  await fs.unlink(req.file.path);
+
+  await User.findByIdAndUpdate(_id, { avatarURL: avatar });
+
+  res.json({
+    avatar,
+  });
+};
+
+const updateUserProfile = async (req, res) => {
+  const { email, firstName, lastName } = req.body;
+  const { userId } = req.params;
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw HttpError(404);
+  }
+
+  if (email && email !== user.email) {
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      throw HttpError(400, "Email already exists in the database");
+    }
+
+    user.email = email;
+  }
+
+  if (firstName) user.firstName = firstName;
+
+  if (lastName) user.lastName = lastName;
+
+  await user.save();
+
+  res.json({
+    user,
+  });
+};
+
 export default {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   logout: ctrlWrapper(logout),
   current: ctrlWrapper(current),
+  updateUserAvatar: ctrlWrapper(updateUserAvatar),
+  updateUserProfile: ctrlWrapper(updateUserProfile),
 };

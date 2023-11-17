@@ -7,7 +7,8 @@ const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const userSchema = new Schema(
   {
-    name: String,
+    firstName: { type: String },
+    lastName: { type: String },
     email: {
       type: String,
       match: emailRegexp,
@@ -21,6 +22,7 @@ const userSchema = new Schema(
     },
     avatarURL: {
       type: String,
+      require: true,
     },
     token: {
       type: String,
@@ -43,6 +45,12 @@ export const userRegisterSchema = Joi.object({
 export const userLoginSchema = Joi.object({
   email: Joi.string().pattern(emailRegexp).required(),
   password: Joi.string().min(8).required(),
+});
+
+export const updateUserSchema = Joi.object({
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  email: Joi.string().pattern(emailRegexp),
 });
 
 const User = model("user", userSchema);
