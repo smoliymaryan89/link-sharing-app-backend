@@ -35,7 +35,7 @@ profileSchema.post("findOneAndUpdate", handleSaveError);
 export const updateProfileSchema = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
-  email: Joi.string().pattern(emailRegexp),
+  emailPreview: Joi.string().pattern(emailRegexp),
 });
 
 const Profile = model("profile", profileSchema);
