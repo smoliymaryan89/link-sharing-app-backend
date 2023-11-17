@@ -26,7 +26,7 @@ const addProfile = async (req, res) => {
 const getProfile = async (req, res) => {
   const { id: owner } = req.user;
 
-  const result = await Profile.find({ owner });
+  const result = await Profile.findOne({ owner });
 
   res.json(result);
 };
