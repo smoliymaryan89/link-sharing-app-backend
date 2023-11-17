@@ -23,6 +23,15 @@ const addProfile = async (req, res) => {
   }
 };
 
+const getProfile = async (req, res) => {
+  const { id: owner } = req.user;
+
+  const result = await Profile.find({ owner });
+
+  res.json(result);
+};
+
 export default {
   addProfile: ctrlWrapper(addProfile),
+  getProfile: ctrlWrapper(getProfile),
 };

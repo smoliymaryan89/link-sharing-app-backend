@@ -16,6 +16,8 @@ const updateProfileValidate = validateBody(profileSchema.updateProfileSchema);
 
 const profileRouter = express.Router();
 
+profileRouter.get("/", authenticate, profileController.getProfile);
+
 profileRouter.patch(
   "/:userId",
   authenticate,
