@@ -4,7 +4,7 @@ import { handleSaveError, runValidatorAtUpdate } from "./hooks.js";
 
 const linkSchema = new Schema(
   {
-    value: {
+    platform: {
       type: String,
       required: true,
     },
@@ -28,8 +28,8 @@ linkSchema.pre("findOneAndUpdate", runValidatorAtUpdate);
 linkSchema.post("findOneAndUpdate", handleSaveError);
 
 export const linkAddSchema = Joi.object({
-  value: Joi.string().required(),
-  email: Joi.string().required(),
+  platform: Joi.string().required(),
+  link: Joi.string().required(),
 });
 
 const Link = model("link", linkSchema);
