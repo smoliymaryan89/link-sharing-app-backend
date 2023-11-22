@@ -8,10 +8,7 @@ const linkSchema = new Schema(
       type: Array,
       required: true,
     },
-    link: {
-      type: String,
-      required: true,
-    },
+
     owner: {
       type: Schema.Types.ObjectId,
       ref: "user",
@@ -26,11 +23,6 @@ linkSchema.post("save", handleSaveError);
 linkSchema.pre("findOneAndUpdate", runValidatorAtUpdate);
 
 linkSchema.post("findOneAndUpdate", handleSaveError);
-
-export const linkAddSchema = Joi.object({
-  platform: Joi.string().required(),
-  link: Joi.string().required(),
-});
 
 const Link = model("link", linkSchema);
 
