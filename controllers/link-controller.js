@@ -11,18 +11,24 @@ const getAll = async (req, res) => {
   res.json(result);
 };
 
+// const addLink = async (req, res) => {
+//   const { id: owner } = req.user;
+//   const result = await Link.create({ ...req.body, owner });
+//   res.status(201).json(result);
+// };
+
 const addLink = async (req, res) => {
   const { id: owner } = req.user;
 
   const existingLink = await Link.findOne({ owner });
 
-  if (existingLink) {
-    const updatedLink = await Link.findOneAndUpdate({ ...req.body });
-
-    res.status(200).json(updatedLink);
-  } else {
-    const result = await Link.create({ ...req.body, owner });
+  if (!existingLink) {
+    const result = await Link.create({ links: req.body.links, owner });
     res.status(201).json(result);
+  } else {
+    existingLink.links.push(...req.body.links);
+    await existingLink.save();
+    res.status(201).json(existingLink);
   }
 };
 
@@ -30,23 +36,25 @@ const deleteById = async (req, res) => {
   const { id: owner } = req.user;
   const { linkId } = req.params;
 
-  const result = await Link.findOneAndUpdate(
-    { owner },
-    { $pull: { platform: { id: linkId } } }
-  );
+  const userLinks = await Link.findOne({ owner });
 
-  if (!result) {
-    throw HttpError(404);
+  if (!userLinks) {
+    throw HttpError(404, "No link found to delete");
   }
 
-  const link = await Link.findOne({ owner });
+  const linkToDelete = userLinks.links.find((link) => link.id === linkId);
 
-  if (link.platform.length === 0) {
-    await Link.findOneAndDelete({ owner });
-    res.json({ message: "link and associated record deleted" });
-  } else {
-    res.json({ message: "link deleted" });
+  if (!linkToDelete) {
+    throw HttpError(404, "No link found to delete");
   }
+
+  await Link.updateOne({ owner }, { $pull: { links: { id: linkId } } });
+
+  if (userLinks.links.length === 1) {
+    await Link.deleteOne({ owner });
+  }
+
+  res.json({ deletedLinkId: linkToDelete.id });
 };
 
 export default {
