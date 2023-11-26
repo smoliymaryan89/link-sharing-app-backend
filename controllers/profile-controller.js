@@ -1,5 +1,3 @@
-import fs from "fs/promises";
-
 import Profile from "../models/Profile.js";
 
 import { HttpError } from "../helpers/index.js";
