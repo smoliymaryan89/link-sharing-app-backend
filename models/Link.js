@@ -4,18 +4,17 @@ import { handleSaveError, runValidatorAtUpdate } from "./hooks.js";
 
 const linkSchema = new Schema(
   {
-    platform: {
+    links: {
       type: Array,
       required: true,
     },
-
     owner: {
       type: Schema.Types.ObjectId,
       ref: "user",
       required: true,
     },
   },
-  { versionKey: false }
+  { versionKey: false, timestamps: true }
 );
 
 linkSchema.post("save", handleSaveError);
