@@ -27,7 +27,7 @@ const getProfile = async (req, res) => {
   const result = await Profile.findOne({ owner });
 
   if (!result) {
-    throw new HttpError(404, "Profile not found");
+    throw HttpError(404, "Profile not found");
   }
 
   res.json(result);
