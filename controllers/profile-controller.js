@@ -2,7 +2,7 @@ import fs from "fs/promises";
 
 import Profile from "../models/Profile.js";
 
-import { HttpError, cloudinary } from "../helpers/index.js";
+import { HttpError } from "../helpers/index.js";
 import { ctrlWrapper } from "../decorators/index.js";
 
 const addProfile = async (req, res) => {
@@ -27,6 +27,10 @@ const getProfile = async (req, res) => {
   const { id: owner } = req.user;
 
   const result = await Profile.findOne({ owner });
+
+  if (!result) {
+    throw new HttpError(404, "Profile not found");
+  }
 
   res.json(result);
 };
