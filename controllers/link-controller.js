@@ -57,6 +57,27 @@ const updateLink = async (req, res) => {
   res.json(updatedLink);
 };
 
+const reorderLink = async (req, res) => {
+  const { id: owner } = req.user;
+  const orderedLinks = req.body;
+
+  const userLinks = await Link.findOne({ owner });
+
+  if (!userLinks) {
+    throw HttpError(404, "User not found");
+  }
+
+  const isOrderMatched = orderedLinks.every((orderedLink, index) => {
+    return orderedLink.id === userLinks.links[index].id;
+  });
+  if (!isOrderMatched) {
+    userLinks.links = orderedLinks;
+    await userLinks.save();
+  }
+
+  res.json(userLinks);
+};
+
 const deleteById = async (req, res) => {
   const { id: owner } = req.user;
   const { linkId } = req.params;
@@ -86,5 +107,6 @@ export default {
   getAll: ctrlWrapper(getAll),
   addLink: ctrlWrapper(addLink),
   updateLink: ctrlWrapper(updateLink),
+  reorderLink: ctrlWrapper(reorderLink),
   deleteById: ctrlWrapper(deleteById),
 };
