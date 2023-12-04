@@ -33,8 +33,8 @@ profileSchema.pre("findOneAndUpdate", runValidatorAtUpdate);
 profileSchema.post("findOneAndUpdate", handleSaveError);
 
 export const updateProfileSchema = Joi.object({
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
+  firstName: Joi.string(),
+  lastName: Joi.string(),
   emailPreview: Joi.string().pattern(emailRegexp),
 });
 
