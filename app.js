@@ -6,6 +6,7 @@ import "dotenv/config";
 import authRouter from "./routes/api/auth-router.js";
 import profileRouter from "./routes/api/profile-router.js";
 import linkRouter from "./routes/api/link-router.js";
+import sharedRouter from "./routes/api/shared-router.js";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use("/api/auth", authRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/link", linkRouter);
+app.use("/api/shared", sharedRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
