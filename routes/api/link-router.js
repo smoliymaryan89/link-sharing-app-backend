@@ -10,9 +10,7 @@ linkRouter.use(authenticate);
 
 linkRouter.get("/", linkController.getAll);
 
-linkRouter.post("/", linkController.addLink);
-
-linkRouter.patch("/reorder", linkController.reorderLink);
+linkRouter.patch("/", linkController.addOrReorderLink);
 
 linkRouter.patch("/:linkId", linkController.updateLink);
 

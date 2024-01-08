@@ -11,21 +11,6 @@ const getAll = async (req, res) => {
   res.json(result);
 };
 
-const addLink = async (req, res) => {
-  const { id: owner } = req.user;
-
-  const existingLink = await Link.findOne({ owner });
-
-  if (!existingLink) {
-    const result = await Link.create({ links: req.body.links, owner });
-    res.status(201).json(result);
-  } else {
-    existingLink.links.push(...req.body.links);
-    await existingLink.save();
-    res.status(201).json(existingLink);
-  }
-};
-
 const updateLink = async (req, res) => {
   const { id: owner } = req.user;
   const { linkId } = req.params;
@@ -57,23 +42,19 @@ const updateLink = async (req, res) => {
   res.json(updatedLink);
 };
 
-const reorderLink = async (req, res) => {
+const addOrReorderLink = async (req, res) => {
   const { id: owner } = req.user;
-  const orderedLinks = req.body;
+  const item = req.body;
 
-  const userLinks = await Link.findOne({ owner });
+  let userLinks = await Link.findOne({ owner });
 
   if (!userLinks) {
-    throw HttpError(404, "User not found");
+    userLinks = new Link({ owner, links: item });
+  } else {
+    userLinks.links = item;
   }
 
-  const isOrderMatched = orderedLinks.every((orderedLink, index) => {
-    return orderedLink.id === userLinks.links[index].id;
-  });
-  if (!isOrderMatched) {
-    userLinks.links = orderedLinks;
-    await userLinks.save();
-  }
+  await userLinks.save();
 
   res.json(userLinks);
 };
@@ -105,8 +86,7 @@ const deleteById = async (req, res) => {
 
 export default {
   getAll: ctrlWrapper(getAll),
-  addLink: ctrlWrapper(addLink),
   updateLink: ctrlWrapper(updateLink),
-  reorderLink: ctrlWrapper(reorderLink),
+  addOrReorderLink: ctrlWrapper(addOrReorderLink),
   deleteById: ctrlWrapper(deleteById),
 };
